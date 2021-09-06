@@ -1,5 +1,3 @@
-import _ from "lodash-es";
-
 import App from './App.svelte';
 
 const app = new App({

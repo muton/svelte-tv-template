@@ -4,6 +4,8 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
+import sveltePreprocess from 'svelte-preprocess';
+import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -32,7 +34,7 @@ function serve() {
 }
 
 export default {
-	input: 'src/main.js',
+	input: 'src/main.ts',
 	output: {
 		sourcemap: true,
 		format: 'iife',
@@ -41,6 +43,7 @@ export default {
 	},
 	plugins: [
 		svelte({
+			preprocess: sveltePreprocess({ sourceMap: !production }),
 			compilerOptions: {
 				// enable run-time checks when not in production
 				dev: !production
@@ -52,6 +55,25 @@ export default {
 				// let Rollup handle all other warnings normally
 				handler(warning);				
 			}
+		}),
+		// we'll extract any component CSS out into
+		// a separate file - better for performance
+		css({ output: 'bundle.css' }),
+
+		// If you have external dependencies installed from
+		// npm, you'll most likely need these plugins. In
+		// some cases you'll need additional configuration -
+		// consult the documentation for details:
+		// https://github.com/rollup/plugins/tree/master/packages/commonjs
+		resolve({
+			browser: true,
+			dedupe: ['svelte']
+		}),
+		commonjs(),
+		typescript({
+			sourceMap: !production,
+			inlineSources: !production,
+			target: "es5"
 		}),
 		legacy && babel({
 			babelHelpers: "runtime",
@@ -79,20 +101,6 @@ export default {
 				],
 			],
 		}),		
-		// we'll extract any component CSS out into
-		// a separate file - better for performance
-		css({ output: 'bundle.css' }),
-
-		// If you have external dependencies installed from
-		// npm, you'll most likely need these plugins. In
-		// some cases you'll need additional configuration -
-		// consult the documentation for details:
-		// https://github.com/rollup/plugins/tree/master/packages/commonjs
-		resolve({
-			browser: true,
-			dedupe: ['svelte']
-		}),
-		commonjs(),
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
