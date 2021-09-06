@@ -1,3 +1,7 @@
+[This fork outputs polyfilled ES5 code compatible with Presto-based devices - which means basically everything including Samsung Orsay. *Work In Progress*]
+
+---
+
 *Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
 
 ---
